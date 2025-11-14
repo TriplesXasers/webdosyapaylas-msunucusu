@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-# webdosyapaylas-msunucusu
 Web Dosya Paylaşım Sunucu oluşturun, hemde localde güveli.
 =======
 # 🌐 Web Dosya Paylaşım Sunucusu
@@ -431,4 +429,3 @@ Sorularınız veya önerileriniz için issue açabilirsiniz.
 ---
 
 **⭐ Projeyi beğendiyseniz yıldız vermeyi unutmayın!**
->>>>>>> c0cabdb (Yaptığım değişiklikler)
