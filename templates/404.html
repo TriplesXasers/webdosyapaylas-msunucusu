@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sayfa Bulunamadı</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            text-align: center;
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .error-code {
+            font-size: 8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .error-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .error-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            font-size: 1.1em;
+            color: #6c757d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .error-details {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+            font-size: 0.9em;
+            color: #adb5bd;
+        }
+
+        .suggestions {
+            text-align: left;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .suggestions h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .suggestions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .suggestions li {
+            padding: 8px 0;
+            color: #6c757d;
+        }
+
+        .suggestions li:before {
+            content: "→ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔍</div>
+        <div class="error-code">404</div>
+        <h1 class="error-title">Sayfa Bulunamadı</h1>
+        <p class="error-message">
+            Aradığınız sayfa mevcut değil veya taşınmış olabilir.
+            <br>
+            Lütfen URL'yi kontrol edin veya ana sayfaya dönün.
+        </p>
+
+        <div class="error-buttons">
+            <button class="btn btn-primary" onclick="window.location.href='/'">
+                🏠 Ana Sayfaya Dön
+            </button>
+            <button class="btn btn-secondary" onclick="history.back()">
+                ← Geri Git
+            </button>
+        </div>
+
+        <div class="suggestions">
+            <h3>💡 Öneriler:</h3>
+            <ul>
+                <li>URL'nin doğru yazıldığından emin olun</li>
+                <li>Aradığınız dosya silinmiş olabilir</li>
+                <li>Erişim izniniz olmayabilir</li>
+                <li>Ana sayfadan tekrar deneyin</li>
+            </ul>
+        </div>
+
+        <div class="error-details">
+            Sorun devam ederse lütfen sistem yöneticisiyle iletişime geçin.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Kullanıcı verileri
+Shared/*/
+Backup/*/
+Veriler/*.json
+!Veriler/.gitkeep
+
+# Loglar
+logs/*.json
+!logs/.gitkeep
+
+# Konfigürasyon
+config.json
+
+# Kullanıcı dosyaları
+users.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Geçici dosyalar
+*.tmp
+*.bak
+*.log

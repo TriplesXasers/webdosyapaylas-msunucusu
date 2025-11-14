@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktivite Logları</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 2em; }
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .content { padding: 30px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2.5em; font-weight: bold; }
+        .stat-label { font-size: 1em; opacity: 0.9; margin-top: 5px; }
+        .activity-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .activity-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .activity-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        .activity-details {
+            flex: 1;
+        }
+        .activity-user {
+            font-weight: 600;
+            color: #333;
+        }
+        .activity-action {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .activity-time {
+            color: #adb5bd;
+            font-size: 0.85em;
+        }
+        .filter-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Aktivite Logları</h1>
+            <div>
+                <a href="/admin-panel" class="btn">🏠 Panel</a>
+                <a href="/admin/users" class="btn">👥 Kullanıcılar</a>
+                <a href="/logout" class="btn">🚪 Çıkış</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.last_24h_activities }}</div>
+                    <div class="stat-label">Son 24 Saat</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.last_24h_uploads }}</div>
+                    <div class="stat-label">Yükleme</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.last_24h_downloads }}</div>
+                    <div class="stat-label">İndirme</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ stats.total_activities }}</div>
+                    <div class="stat-label">Toplam Aktivite</div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterActivities('all')">Tümü</button>
+                <button class="filter-btn" onclick="filterActivities('file_upload')">📤 Yükleme</button>
+                <button class="filter-btn" onclick="filterActivities('file_download')">📥 İndirme</button>
+                <button class="filter-btn" onclick="filterActivities('file_delete')">🗑️ Silme</button>
+                <button class="filter-btn" onclick="filterActivities('folder_create')">📁 Klasör</button>
+            </div>
+
+            <div class="activity-list">
+                {% for activity in activities %}
+                <div class="activity-item" data-type="{{ activity.type }}">
+                    <span class="activity-icon">
+                        {% if activity.type == 'file_upload' %}📤
+                        {% elif activity.type == 'file_download' %}📥
+                        {% elif activity.type == 'file_delete' %}🗑️
+                        {% elif activity.type == 'folder_create' %}📁
+                        {% else %}📋{% endif %}
+                    </span>
+                    <div class="activity-details">
+                        <div class="activity-user">{{ activity.username }}</div>
+                        <div class="activity-action">
+                            {% if activity.type == 'file_upload' %}
+                                <strong>{{ activity.filename }}</strong> dosyasını yükledi ({{ activity.size|filesizeformat }})
+                            {% elif activity.type == 'file_download' %}
+                                <strong>{{ activity.filename }}</strong> dosyasını indirdi
+                            {% elif activity.type == 'file_delete' %}
+                                <strong>{{ activity.filename }}</strong> dosyasını sildi
+                            {% elif activity.type == 'folder_create' %}
+                                <strong>{{ activity.foldername }}</strong> klasörünü oluşturdu
+                            {% endif %}
+                        </div>
+                        <div class="activity-time">{{ activity.timestamp }} - IP: {{ activity.ip }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterActivities(type) {
+            const items = document.querySelectorAll('.activity-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            items.forEach(item => {
+                if (type === 'all' || item.dataset.type === type) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

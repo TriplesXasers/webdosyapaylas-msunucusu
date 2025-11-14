@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="{{ config.theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunucu Ayarları</title>
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: var(--gradient-start);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .theme-preview {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .theme-option.light {
+            background: #ffffff;
+            color: #333333;
+        }
+
+        .theme-option.dark {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .theme-option.selected {
+            border-color: var(--gradient-start);
+        }
+
+        .theme-option:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Sunucu Ayarları</h1>
+            <a href="/server-panel" class="btn">← Geri Dön</a>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>🎨 Tema</h2>
+                <div class="theme-preview">
+                    <div class="theme-option light {{ 'selected' if config.theme == 'light' else '' }}" onclick="changeTheme('light')">
+                        <strong>☀️ Açık Tema</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">Aydınlık ve temiz görünüm</p>
+                    </div>
+                    <div class="theme-option dark {{ 'selected' if config.theme == 'dark' else '' }}" onclick="changeTheme('dark')">
+                        <strong>🌙 Koyu Tema</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">Gözleri yormayan karanlık mod</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function changeTheme(theme) {
+            try {
+                const response = await fetch('/update-server-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ theme: theme })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                }
+            } catch (error) {
+                alert('Tema değiştirme hatası: ' + error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paylaşılan Dosya</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .download-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .file-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+        .file-name {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        .file-info {
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .password-form {
+            margin-bottom: 20px;
+        }
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        .download-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+        .download-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+        .info-item {
+            text-align: center;
+        }
+        .info-label {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="download-card">
+        <div class="file-icon">📄</div>
+        <div class="file-name">{{ link.filepath.split('/')[-1] }}</div>
+        <div class="file-info">Paylaşan: {{ link.username }}</div>
+
+        {% if error %}
+        <div class="error-message">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        {% if requires_password %}
+        <form method="POST" class="password-form">
+            <input type="password" name="password" class="password-input" placeholder="🔒 Şifre girin" required>
+            <button type="submit" class="download-btn">🔓 Kilidi Aç ve İndir</button>
+        </form>
+        {% else %}
+        <form method="POST">
+            <button type="submit" class="download-btn">⬇️ İndir</button>
+        </form>
+        {% endif %}
+
+        <div class="download-info">
+            <div class="info-item">
+                <div class="info-label">İndirme Sayısı</div>
+                <div class="info-value">{{ link.download_count }}{% if link.max_downloads %} / {{ link.max_downloads }}{% endif %}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Süre Sonu</div>
+                <div class="info-value">{% if link.expires_at %}{{ link.expires_at[:10] }}{% else %}Yok{% endif %}</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

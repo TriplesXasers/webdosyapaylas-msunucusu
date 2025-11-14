@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="{{ settings.theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çöp Kutusu</title>
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .toolbar {
+            padding: 20px 30px;
+            background: var(--bg-secondary);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .file-list {
+            padding: 30px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: var(--bg-secondary);
+            transition: all 0.3s;
+        }
+
+        .file-item:hover {
+            background: var(--border-color);
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .file-size {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            color: var(--text-primary);
+        }
+
+        .info-box {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 30px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗑️ Çöp Kutusu</h1>
+            <p>Silinen dosyalarınız burada</p>
+        </div>
+
+        <div class="toolbar">
+            <a href="/" class="btn btn-primary">← Ana Sayfaya Dön</a>
+        </div>
+
+        <div class="info-box">
+            💡 <strong>Bilgi:</strong> Silinen dosyalar burada saklanır. Geri yükleyebilir veya kalıcı olarak silebilirsiniz.
+        </div>
+
+        <div class="file-list">
+            {% if items %}
+                {% for item in items %}
+                <div class="file-item">
+                    <div class="file-icon">
+                        {% if item.is_dir %}
+                            📁
+                        {% else %}
+                            📄
+                        {% endif %}
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">{{ item.name }}</div>
+                        <div class="file-size">{{ item.size }}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-success btn-small" onclick="restoreItem('{{ item.path }}')">
+                            ↩️ Geri Yükle
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deletePermanent('{{ item.path }}')">
+                            🗑️ Kalıcı Sil
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🗑️</div>
+                    <h2>Çöp kutusu boş</h2>
+                    <p>Silinen dosyalar burada görünecek</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        async function restoreItem(path) {
+            if (!confirm('Bu öğeyi geri yüklemek istediğinizden emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/restore/${path}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Geri yükleme hatası: ' + error);
+            }
+        }
+
+        async function deletePermanent(path) {
+            if (!confirm('Bu öğeyi KALICI olarak silmek istediğinizden emin misiniz?\nBu işlem geri alınamaz!')) return;
+
+            try {
+                const response = await fetch(`/delete-permanent/${path}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Silme hatası: ' + error);
+            }
+        }
+    </script>
+</body>
+</html>

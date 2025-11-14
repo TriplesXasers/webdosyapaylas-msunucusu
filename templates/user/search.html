@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Arama</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: white;
+            color: #333;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .header h1 { font-size: 2em; }
+        .btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .content { padding: 30px; }
+        .search-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        .search-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .results-container {
+            margin-top: 30px;
+        }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .results-count {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+        .results-grid {
+            display: grid;
+            gap: 15px;
+        }
+        .result-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .result-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        .result-info {
+            flex: 1;
+        }
+        .result-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .result-details {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        .result-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Gelişmiş Arama</h1>
+            <div>
+                <a href="/" class="btn">🏠 Ana Sayfa</a>
+                <a href="/logout" class="btn">🚪 Çıkış</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="search-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🔎 Dosya Adı</label>
+                        <input type="text" id="query" placeholder="Dosya adı ara...">
+                    </div>
+                    <div class="form-group">
+                        <label>📁 Dosya Tipi</label>
+                        <select id="fileType">
+                            <option value="">Tümü</option>
+                            <option value="image">Resim</option>
+                            <option value="video">Video</option>
+                            <option value="audio">Müzik</option>
+                            <option value="document">Doküman</option>
+                            <option value="archive">Arşiv</option>
+                            <option value="code">Kod</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📏 Min Boyut (KB)</label>
+                        <input type="number" id="minSize" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>📏 Max Boyut (MB)</label>
+                        <input type="number" id="maxSize" placeholder="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📅 Başlangıç Tarihi</label>
+                        <input type="date" id="dateFrom">
+                    </div>
+                    <div class="form-group">
+                        <label>📅 Bitiş Tarihi</label>
+                        <input type="date" id="dateTo">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>🔄 Sıralama</label>
+                        <select id="sortBy">
+                            <option value="name">İsim</option>
+                            <option value="size">Boyut</option>
+                            <option value="date">Tarih</option>
+                            <option value="type">Tip</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>↕️ Sıra</label>
+                        <select id="sortOrder">
+                            <option value="asc">Artan</option>
+                            <option value="desc">Azalan</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="search-btn" onclick="performSearch()">🔍 Ara</button>
+            </div>
+
+            <div id="resultsContainer" class="results-container" style="display: none;">
+                <div class="results-header">
+                    <div class="results-count" id="resultsCount">0 sonuç bulundu</div>
+                </div>
+                <div class="results-grid" id="resultsGrid"></div>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <div style="font-size: 4em; margin-bottom: 20px;">🔍</div>
+                <h2>Arama yapmak için yukarıdaki formu kullanın</h2>
+                <p>Dosya adı, tip, boyut veya tarihe göre arama yapabilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function performSearch() {
+            const query = document.getElementById('query').value;
+            const fileType = document.getElementById('fileType').value;
+            const minSize = document.getElementById('minSize').value;
+            const maxSize = document.getElementById('maxSize').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const sortBy = document.getElementById('sortBy').value;
+            const sortOrder = document.getElementById('sortOrder').value;
+
+            const searchData = {
+                query: query || null,
+                file_type: fileType || null,
+                min_size: minSize ? parseInt(minSize) * 1024 : null,
+                max_size: maxSize ? parseInt(maxSize) * 1024 * 1024 : null,
+                date_from: dateFrom || null,
+                date_to: dateTo || null,
+                sort_by: sortBy,
+                sort_order: sortOrder
+            };
+
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('resultsContainer').innerHTML = '<div class="loading">🔄 Aranıyor...</div>';
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            fetch('/api/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(searchData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayResults(data.results, data.count);
+                } else {
+                    alert('Hata: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Arama sırasında bir hata oluştu');
+            });
+        }
+
+        function displayResults(results, count) {
+            const container = document.getElementById('resultsContainer');
+            const countEl = document.getElementById('resultsCount');
+            const gridEl = document.getElementById('resultsGrid');
+
+            countEl.textContent = `${count} sonuç bulundu`;
+            gridEl.innerHTML = '';
+
+            if (results.length === 0) {
+                gridEl.innerHTML = '<div class="empty-state"><h3>Sonuç bulunamadı</h3><p>Farklı kriterler deneyin.</p></div>';
+                return;
+            }
+
+            results.forEach(result => {
+                const icon = getFileIcon(result.type);
+                const size = formatSize(result.size);
+                const date = new Date(result.modified).toLocaleDateString('tr-TR');
+
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `
+                    <div class="result-icon">${icon}</div>
+                    <div class="result-info">
+                        <div class="result-name">${result.name}</div>
+                        <div class="result-details">
+                            📁 ${result.path} | 📏 ${size} | 📅 ${date}
+                        </div>
+                    </div>
+                `;
+                gridEl.appendChild(item);
+            });
+        }
+
+        function getFileIcon(type) {
+            const icons = {
+                'image': '🖼️',
+                'video': '🎬',
+                'audio': '🎵',
+                'document': '📄',
+                'archive': '📦',
+                'code': '💻',
+                'other': '📄'
+            };
+            return icons[type] || '📄';
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+        }
+    </script>
+</body>
+</html>

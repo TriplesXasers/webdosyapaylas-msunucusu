@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paylaşım Linkleri</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+            --card-bg: #f8f9fa;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #2d2d2d;
+                --text-primary: #ffffff;
+                --text-secondary: #b0b0b0;
+                --border-color: #404040;
+                --card-bg: #2d2d2d;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 2em; }
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .content { 
+            padding: 30px;
+            background: var(--bg-primary);
+        }
+        .links-grid {
+            display: grid;
+            gap: 20px;
+        }
+        .link-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #28a745;
+        }
+        .link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .link-file {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .link-owner {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        .link-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .btn-download {
+            background: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-download:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state h2 {
+            color: var(--text-primary);
+        }
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Paylaşım Linkleri</h1>
+            <div>
+                <a href="/" class="btn">🏠 Ana Sayfa</a>
+                <a href="/user/my-links" class="btn">🔗 Linklerim</a>
+                <a href="/logout" class="btn">🚪 Çıkış</a>
+            </div>
+        </div>
+
+        <div class="content">
+            {% if links %}
+            <div class="links-grid">
+                {% for link in links %}
+                <div class="link-card">
+                    <div class="link-header">
+                        <div>
+                            <div class="link-file">📄 {{ link.filepath }}</div>
+                            <div class="link-owner">👤 {{ link.owner }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="link-info">
+                        <div class="info-item">
+                            <span class="info-label">Paylaşım Tarihi</span>
+                            <span class="info-value">{{ link.created_at[:19] }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">İndirme Sayısı</span>
+                            <span class="info-value">{{ link.download_count }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Şifre</span>
+                            <span class="info-value">{% if link.password %}🔒 Var{% else %}🔓 Yok{% endif %}</span>
+                        </div>
+                    </div>
+                    
+                    <a href="/shared/{{ link.token }}" class="btn-download">
+                        📥 İndir
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🌐</div>
+                <h2>Henüz paylaşım yok</h2>
+                <p>Başka kullanıcılar dosya paylaştığında burada görünecek.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

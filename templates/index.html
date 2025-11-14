@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="{{ settings.theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dosya Paylaşım Sunucusu - DPS</title>
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .breadcrumb {
+            background: var(--bg-secondary);
+            padding: 15px 30px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .toolbar {
+            padding: 20px 30px;
+            background: var(--bg-secondary);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .drop-zone {
+            margin: 30px;
+            padding: 60px;
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            text-align: center;
+            background: var(--bg-secondary);
+            transition: all 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            background: var(--border-color);
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .drop-zone-text {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone p {
+            color: var(--text-secondary);
+        }
+
+        .file-list {
+            padding: 30px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: var(--bg-secondary);
+            transition: all 0.3s;
+        }
+
+        .file-item:hover {
+            background: var(--border-color);
+            transform: translateX(5px);
+        }
+
+        .file-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .file-size {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            color: var(--text-primary);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Widget Styles */
+        .widget {
+            position: fixed;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 300px;
+            max-width: 400px;
+            z-index: 1000;
+            cursor: default;
+        }
+
+        .widget-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        }
+
+        .widget-drag-handle {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .widget-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            transition: all 0.3s;
+        }
+
+        .widget-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .widget-content {
+            padding: 15px;
+            color: var(--text-primary);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .weather-info {
+            text-align: center;
+        }
+
+        .weather-temp {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .weather-desc {
+            font-size: 1.2em;
+            color: var(--text-secondary);
+        }
+
+        .news-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .news-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .news-link:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Widgets -->
+    {% if settings.widgets.clock.enabled %}
+    <div class="widget clock-widget" id="clockWidget" style="left: {{ settings.widgets.clock.x }}px; top: {{ settings.widgets.clock.y }}px;">
+        <div class="widget-header">
+            <span class="widget-drag-handle">🕐 Saat</span>
+            <button class="widget-close" onclick="closeWidget('clockWidget')">&times;</button>
+        </div>
+        <div class="widget-content">
+            <div id="clockData" style="font-size: 2em; font-weight: bold; text-align: center;"></div>
+            <div id="dateData" style="text-align: center; margin-top: 10px;"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="header">
+            <h1>📁 Dosya Paylaşım Sunucusu</h1>
+            <p>Hoş geldin, {{ username }}! 👋</p>
+            <div style="display: flex; gap: 15px;">
+                <a href="/search" style="color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9;">🔍 Gelişmiş Arama</a>
+                <a href="/my-links" style="color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9;">🔗 Paylaşım Linklerim</a>
+                <a href="/public-links" style="color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9;">🌐 Paylaşım Linkleri</a>
+                <a href="/trash" style="color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9;">🗑️ Çöp Kutusu</a>
+                <a href="/settings" style="color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9;">⚙️ Ayarlar</a>
+                <a href="/logout" style="color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9;">🚪 Çıkış Yap</a>
+            </div>
+        </div>
+
+        <div class="breadcrumb">
+            <a href="/">🏠 Ana Dizin</a>
+            {% for part in path_parts %}
+                <span>/</span>
+                <a href="/{{ part.path }}">{{ part.name }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                📤 Dosya Yükle
+            </button>
+            <button class="btn btn-secondary" onclick="openFolderModal()">
+                📁 Yeni Klasör
+            </button>
+            <a href="/trash" class="btn btn-warning" style="text-decoration: none; display: inline-flex; align-items: center;">
+                🗑️ Çöp Kutusu
+            </a>
+            <input type="file" id="fileInput" multiple onchange="uploadFiles(this.files)">
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-text">🎯 Dosyaları buraya sürükleyin</div>
+            <p style="color: #6c757d;">veya yukarıdaki butonu kullanın</p>
+        </div>
+
+        <div class="file-list">
+            {% if items %}
+                {% for item in items %}
+                <div class="file-item">
+                    <div class="file-icon">
+                        {% if item.is_dir %}
+                            📁
+                        {% else %}
+                            📄
+                        {% endif %}
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">{{ item.name }}</div>
+                        <div class="file-size">{{ item.size }}</div>
+                    </div>
+                    <div class="file-actions">
+                        {% if item.is_dir %}
+                            <a href="/{{ item.path }}" class="btn btn-primary btn-small">Aç</a>
+                        {% else %}
+                            {% if item.file_type in ['image', 'video', 'audio', 'text', 'pdf'] %}
+                                <a href="/preview/{{ item.path }}" class="btn btn-info btn-small">👁️ Önizle</a>
+                            {% elif item.file_type == 'archive' %}
+                                <a href="/view-archive/{{ item.path }}" class="btn btn-warning btn-small">📦 İçeriği Gör</a>
+                            {% endif %}
+                            <button class="btn btn-info btn-small" onclick="shareFile('{{ item.path }}', '{{ item.name }}')">🔗 Paylaş</button>
+                            <a href="/{{ item.path }}" class="btn btn-success btn-small">İndir</a>
+                        {% endif %}
+                        <button class="btn btn-danger btn-small" onclick="deleteItem('{{ item.path }}')">Sil</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <h2>Henüz dosya yok</h2>
+                    <p>Dosya yüklemek için yukarıdaki butonu kullanın veya dosyaları sürükleyin</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Klasör Oluşturma Modal -->
+    <div class="modal" id="folderModal">
+        <div class="modal-content">
+            <div class="modal-header">Yeni Klasör Oluştur</div>
+            <div class="form-group">
+                <label>Klasör Adı:</label>
+                <input type="text" id="folderName" placeholder="Klasör adını girin">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeFolderModal()">İptal</button>
+                <button class="btn btn-primary" onclick="createFolder()">Oluştur</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const currentPath = '{{ current_path }}';
+
+        // Widget Drag & Drop
+        let draggedWidget = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        document.querySelectorAll('.widget').forEach(widget => {
+            const header = widget.querySelector('.widget-header');
+            
+            header.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('widget-close')) return;
+                
+                draggedWidget = widget;
+                const rect = widget.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                widget.style.cursor = 'grabbing';
+                widget.style.zIndex = 1001;
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (draggedWidget) {
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
+                
+                // Ekran sınırları kontrolü
+                newX = Math.max(0, Math.min(newX, window.innerWidth - draggedWidget.offsetWidth));
+                newY = Math.max(0, Math.min(newY, window.innerHeight - draggedWidget.offsetHeight));
+                
+                draggedWidget.style.left = newX + 'px';
+                draggedWidget.style.top = newY + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (draggedWidget) {
+                draggedWidget.style.cursor = 'default';
+                draggedWidget.style.zIndex = 1000;
+                
+                // Pozisyonu kaydet
+                saveWidgetPosition(draggedWidget.id, 
+                    parseInt(draggedWidget.style.left), 
+                    parseInt(draggedWidget.style.top));
+                
+                draggedWidget = null;
+            }
+        });
+
+        async function saveWidgetPosition(widgetId, x, y) {
+            const widgetName = widgetId.replace('Widget', '');
+            const widgets = {{ settings.widgets | tojson }};
+            
+            if (widgets[widgetName]) {
+                widgets[widgetName].x = x;
+                widgets[widgetName].y = y;
+                
+                try {
+                    await fetch('/update-settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ widgets: widgets })
+                    });
+                } catch (error) {
+                    console.error('Pozisyon kaydetme hatası:', error);
+                }
+            }
+        }
+
+        async function closeWidget(widgetId) {
+            const widgetName = widgetId.replace('Widget', '');
+            const widgets = {{ settings.widgets | tojson }};
+            
+            if (widgets[widgetName]) {
+                widgets[widgetName].enabled = false;
+                
+                try {
+                    const response = await fetch('/update-settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ widgets: widgets })
+                    });
+                    
+                    if (response.ok) {
+                        document.getElementById(widgetId).style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Widget kapatma hatası:', error);
+                }
+            }
+        }
+
+        // Saat Widget'ı
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('tr-TR');
+            const dateStr = now.toLocaleDateString('tr-TR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const clockEl = document.getElementById('clockData');
+            const dateEl = document.getElementById('dateData');
+            
+            if (clockEl) clockEl.textContent = timeStr;
+            if (dateEl) dateEl.textContent = dateStr;
+        }
+
+        if (document.getElementById('clockWidget')) {
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // Drag & Drop (Dosya)
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            uploadFiles(files);
+        });
+
+        // Dosya yükleme
+        async function uploadFiles(files) {
+            if (files.length === 0) return;
+
+            const formData = new FormData();
+            for (let file of files) {
+                formData.append('file', file);
+            }
+
+            try {
+                const url = currentPath ? `/upload/${currentPath}` : '/upload';
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Yükleme hatası: ' + error);
+            }
+        }
+
+        // Dosya paylaşma
+        async function shareFile(filepath, filename) {
+            // Basit paylaşım linki oluştur
+            const expires = prompt('Kaç saat sonra süre dolsun? (Boş bırakırsanız süresiz)', '24');
+            const password = prompt('Şifre koymak ister misiniz? (Boş bırakabilirsiniz)', '');
+            const maxDownloads = prompt('Maksimum kaç kez indirilebilsin? (Boş bırakırsanız sınırsız)', '');
+
+            try {
+                const response = await fetch('/create-share-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filepath: filepath,
+                        expires_hours: expires ? parseInt(expires) : null,
+                        password: password || null,
+                        max_downloads: maxDownloads ? parseInt(maxDownloads) : null
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // Linki kopyala
+                    navigator.clipboard.writeText(result.url).then(() => {
+                        alert('✅ Paylaşım linki oluşturuldu ve kopyalandı!\n\n' + result.url + '\n\nTüm linklerinizi görmek için "Paylaşım Linklerim" sayfasına gidin.');
+                    }).catch(() => {
+                        alert('✅ Paylaşım linki oluşturuldu!\n\n' + result.url + '\n\nLinki manuel olarak kopyalayın.');
+                    });
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Paylaşım hatası: ' + error);
+            }
+        }
+
+        // Dosya/Klasör silme
+        async function deleteItem(path) {
+            if (!confirm('Bu öğeyi silmek istediğinizden emin misiniz?')) return;
+
+            try {
+                const response = await fetch(`/delete/${path}`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Silme hatası: ' + error);
+            }
+        }
+
+        // Klasör oluşturma modal
+        function openFolderModal() {
+            document.getElementById('folderModal').classList.add('active');
+            document.getElementById('folderName').focus();
+        }
+
+        function closeFolderModal() {
+            document.getElementById('folderModal').classList.remove('active');
+            document.getElementById('folderName').value = '';
+        }
+
+        async function createFolder() {
+            const folderName = document.getElementById('folderName').value.trim();
+            if (!folderName) {
+                alert('Lütfen klasör adı girin');
+                return;
+            }
+
+            try {
+                const url = currentPath ? `/create-folder/${currentPath}` : '/create-folder';
+                const formData = new FormData();
+                formData.append('folder_name', folderName);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    location.reload();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Klasör oluşturma hatası: ' + error);
+            }
+        }
+
+        // Enter tuşu ile klasör oluşturma
+        document.getElementById('folderName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                createFolder();
+            }
+        });
+    </script>
+</body>
+</html>

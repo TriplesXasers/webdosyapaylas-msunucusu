@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ filename }} - Arşiv İçeriği</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .file-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .file-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: #e9ecef;
+        }
+
+        .file-name {
+            font-weight: 500;
+        }
+
+        .file-size {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 {{ filename }}</h1>
+            <div class="header-buttons">
+                <button class="btn btn-success" onclick="extractArchive()">📂 Klasöre Çıkar</button>
+                <a href="javascript:history.back()" class="btn">← Geri Dön</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                📋 <strong>Salt Okunur Mod:</strong> Arşiv içeriğini görüntülüyorsunuz. Dosyaları düzenleyemezsiniz.
+                <br>
+                💡 "Klasöre Çıkar" butonuna tıklayarak arşivi normal bir klasöre dönüştürebilirsiniz.
+            </div>
+
+            <h3 style="margin-bottom: 15px;">İçerik ({{ files|length }} dosya)</h3>
+
+            <div class="file-list">
+                {% for file in files %}
+                <div class="file-item">
+                    <div class="file-name">📄 {{ file.name }}</div>
+                    <div class="file-size">{{ file.size }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function extractArchive() {
+            if (!confirm('Bu arşivi klasöre çıkarmak istediğinizden emin misiniz?')) return;
+
+            try {
+                const response = await fetch('/extract-archive/{{ filepath }}', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    window.history.back();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Çıkarma hatası: ' + error);
+            }
+        }
+    </script>
+</body>
+</html>

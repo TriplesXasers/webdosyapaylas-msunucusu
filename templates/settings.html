@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="{{ settings.theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayarlar</title>
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #333333;
+            --text-secondary: #6c757d;
+            --border-color: #e9ecef;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: var(--gradient-start);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--gradient-start);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .theme-preview {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .theme-option.light {
+            background: #ffffff;
+            color: #333333;
+        }
+
+        .theme-option.dark {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .theme-option.selected {
+            border-color: var(--gradient-start);
+        }
+
+        .theme-option:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Ayarlar</h1>
+            <a href="javascript:history.back()" class="btn">← Geri Dön</a>
+        </div>
+
+        <div class="content">
+            <!-- Tema Ayarları -->
+            <div class="section">
+                <h2>🎨 Tema</h2>
+                <div class="form-group">
+                    <label>Tema Seçin:</label>
+                    <div class="theme-preview">
+                        <div class="theme-option light {{ 'selected' if settings.theme == 'light' else '' }}" onclick="changeTheme('light')">
+                            <strong>☀️ Açık Tema</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Aydınlık ve temiz görünüm</p>
+                        </div>
+                        <div class="theme-option dark {{ 'selected' if settings.theme == 'dark' else '' }}" onclick="changeTheme('dark')">
+                            <strong>🌙 Koyu Tema</strong>
+                            <p style="font-size: 0.9em; margin-top: 5px;">Gözleri yormayan karanlık mod</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Şifre Değiştirme -->
+            <div class="section">
+                <h2>🔐 Şifre Değiştir</h2>
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label>Mevcut Şifre:</label>
+                        <input type="password" name="current_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Yeni Şifre:</label>
+                        <input type="password" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Yeni Şifre Tekrar:</label>
+                        <input type="password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Şifreyi Değiştir</button>
+                </form>
+            </div>
+
+            <!-- Widget Ayarları -->
+            {% if not is_admin %}
+            <div class="section">
+                <h2>🎨 Ana Sayfa Widget'ı</h2>
+                <div class="info-box">
+                    📌 Ana sayfada saat widget'ını göster
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="clockWidget" {% if settings.widgets.clock.enabled %}checked{% endif %} style="width: auto;">
+                        <span>🕐 Saat Widget'ı</span>
+                    </label>
+                </div>
+                
+                <button type="button" class="btn-primary" onclick="saveWidgetSettings()">Widget Ayarlarını Kaydet</button>
+            </div>
+            {% endif %}
+
+            <!-- Kullanıcı Adı Değiştirme -->
+            {% if not is_admin %}
+            <div class="section">
+                <h2>👤 Kullanıcı Adı Değiştir</h2>
+                <div class="info-box">
+                    ℹ️ Mevcut kullanıcı adınız: <strong>{{ username }}</strong>
+                </div>
+                <form id="usernameForm">
+                    <div class="form-group">
+                        <label>Yeni Kullanıcı Adı:</label>
+                        <input type="text" name="new_username" required placeholder="Yeni kullanıcı adı">
+                    </div>
+                    <button type="submit" class="btn-primary">Kullanıcı Adını Değiştir</button>
+                </form>
+            </div>
+            {% else %}
+            <div class="section">
+                <h2>👤 Kullanıcı Adı</h2>
+                <div class="info-box">
+                    👑 Admin kullanıcı adı değiştirilemez: <strong>{{ username }}</strong>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        async function changeTheme(theme) {
+            try {
+                const formData = new FormData();
+                formData.append('theme', theme);
+
+                const response = await fetch('/update-settings', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    location.reload();
+                }
+            } catch (error) {
+                alert('Tema değiştirme hatası: ' + error);
+            }
+        }
+
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+
+            try {
+                const response = await fetch('/change-password', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    e.target.reset();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Şifre değiştirme hatası: ' + error);
+            }
+        });
+
+        async function saveWidgetSettings() {
+            const widgets = {
+                clock: {
+                    enabled: document.getElementById('clockWidget').checked,
+                    x: 20,
+                    y: 20
+                }
+            };
+
+            try {
+                const response = await fetch('/update-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ widgets: widgets })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Widget ayarları kaydedildi! Ana sayfayı yenileyin.');
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Kaydetme hatası: ' + error);
+            }
+        }
+
+        const usernameForm = document.getElementById('usernameForm');
+        if (usernameForm) {
+            usernameForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!confirm('Kullanıcı adınızı değiştirmek istediğinizden emin misiniz?')) return;
+
+                const formData = new FormData(e.target);
+
+                try {
+                    const response = await fetch('/change-username', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(result.message);
+                        window.location.href = '/';
+                    } else {
+                        alert('Hata: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('Kullanıcı adı değiştirme hatası: ' + error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

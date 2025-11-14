@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Güvenlik Logları</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 2em; }
+        .btn {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .content { padding: 30px; }
+        .alert-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .alert-title {
+            font-weight: 600;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #856404;
+        }
+        .log-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .log-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .log-success {
+            border-left: 4px solid #28a745;
+        }
+        .log-failed {
+            border-left: 4px solid #dc3545;
+        }
+        .log-warning {
+            border-left: 4px solid #ffc107;
+        }
+        .log-details {
+            flex: 1;
+        }
+        .log-type {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .log-info {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .log-time {
+            color: #adb5bd;
+            font-size: 0.85em;
+        }
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin: 30px 0 20px 0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Güvenlik Logları</h1>
+            <div>
+                <a href="/admin-panel" class="btn">🏠 Panel</a>
+                <a href="/admin/users" class="btn">👥 Kullanıcılar</a>
+                <a href="/logout" class="btn">🚪 Çıkış</a>
+            </div>
+        </div>
+
+        <div class="content">
+            {% if failed_logins %}
+            <div class="alert-box">
+                <div class="alert-title">⚠️ Son 24 Saatte {{ failed_logins|length }} Başarısız Giriş Denemesi</div>
+                <p>Şüpheli aktivite tespit edildi. Lütfen kontrol edin.</p>
+            </div>
+            {% endif %}
+
+            <div class="section-title">📋 Tüm Güvenlik Olayları</div>
+            <div class="log-list">
+                {% for log in security_logs %}
+                <div class="log-item {% if log.type == 'login_success' %}log-success{% elif log.type == 'login_failed' %}log-failed{% else %}log-warning{% endif %}">
+                    <div class="log-details">
+                        <div class="log-type">
+                            {% if log.type == 'login_success' %}
+                                ✅ Başarılı Giriş
+                            {% elif log.type == 'login_failed' %}
+                                ❌ Başarısız Giriş
+                            {% elif log.type == 'logout' %}
+                                🚪 Çıkış
+                            {% elif log.type == 'user_created' %}
+                                👤 Kullanıcı Oluşturuldu
+                            {% elif log.type == 'user_deleted' %}
+                                🗑️ Kullanıcı Silindi
+                            {% elif log.type == 'password_change' %}
+                                🔑 Şifre Değiştirildi
+                            {% endif %}
+                        </div>
+                        <div class="log-info">
+                            <strong>{{ log.username }}</strong> - IP: {{ log.ip }}
+                            {% if log.created_by %}
+                                (Oluşturan: {{ log.created_by }})
+                            {% endif %}
+                            {% if log.deleted_by %}
+                                (Silen: {{ log.deleted_by }})
+                            {% endif %}
+                        </div>
+                        <div class="log-time">{{ log.timestamp }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
